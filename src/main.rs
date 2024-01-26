@@ -1,11 +1,12 @@
-mod widgets;
-use widgets::clock::ClockButton;
-
-use gio::prelude::*;
+use chrono::Local;
+use gio::{glib::once_cell::sync::Lazy, prelude::*};
 use gtk::prelude::*;
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
+use tokio::runtime::Runtime;
+use tokio::time::sleep;
 
-const APP_ID: &str = "org.khs.bar";
+const APP_ID: &str = "dev.khsaad04.bar";
+static RUNTIME: Lazy<Runtime> = Lazy::new(|| Runtime::new().expect("Failed to exec tokio runtime"));
 
 fn main() {
     let app = gtk::Application::builder().application_id(APP_ID).build();
@@ -14,11 +15,33 @@ fn main() {
 }
 
 fn build_ui(app: &gtk::Application) {
-    let clock_button = ClockButton::default();
+    let time_widget = gtk::Label::default();
+    let current_time_str = current_time();
+    time_widget.set_text(&current_time_str);
+
+    let (sender, receiver) = async_channel::bounded(1);
+
+    RUNTIME.spawn(async move {
+        loop {
+            let _ = sender.send(current_time()).await;
+            sleep(tokio::time::Duration::from_secs(1)).await;
+        }
+    });
+
+    let time = time_widget.clone();
+    gtk::glib::spawn_future_local(async move {
+        while let Ok(response) = receiver.recv().await {
+            time.set_text(&response);
+        }
+    });
+
+    let center_box = gtk::CenterBox::default();
+    center_box.set_center_widget(Some(&time_widget));
+
     let bar = gtk::ApplicationWindow::builder()
         .application(app)
         .title("top_bar")
-        .child(&clock_button)
+        .child(&center_box)
         .build();
 
     bar.set_layer(Layer::Overlay);
@@ -41,4 +64,8 @@ fn build_ui(app: &gtk::Application) {
     }
 
     bar.present();
+}
+
+fn current_time() -> String {
+    format!("{}", Local::now().format("%Y-%m-%d %H:%M:%S"))
 }
