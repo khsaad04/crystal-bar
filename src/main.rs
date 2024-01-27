@@ -2,8 +2,12 @@ use chrono::Local;
 use glib::once_cell::sync::Lazy;
 use gtk::prelude::*;
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
-use hyprland::{async_closure, event_listener::AsyncEventListener};
-use tokio::{runtime::Runtime, sync::mpsc, time::sleep};
+use hyprland::event_listener::EventListener;
+use tokio::{
+    runtime::Runtime,
+    sync::{broadcast, mpsc},
+    time::sleep,
+};
 
 const APP_ID: &str = "dev.khsaad04.bar";
 static RUNTIME: Lazy<Runtime> = Lazy::new(|| Runtime::new().expect("Failed to exec tokio runtime"));
@@ -44,21 +48,19 @@ fn build_ui(app: &gtk::Application) {
     workspace_widget.set_margin_top(5);
     workspace_widget.set_margin_bottom(5);
 
-    let mut listener = AsyncEventListener::new();
-
-    let (tx_ws, mut rx_ws) = mpsc::channel(1);
-
-    listener.add_workspace_change_handler(async_closure!(move |id| {
-        tx_ws.send(&id.to_string()).await;
-    }));
+    let mut listener = EventListener::new();
+    let (tx_ws, mut rx_ws) = broadcast::channel(10);
 
     RUNTIME.spawn(async move {
-        let _ = listener.start_listener_async().await;
+        listener.add_workspace_change_handler(move |id| {
+            let _ = tx_ws.send(id.to_string());
+        });
+        let _ = listener.start_listener();
     });
 
     let workspace = workspace_widget.clone();
     glib::spawn_future_local(async move {
-        while let Some(response) = rx_ws.recv().await {
+        while let Ok(response) = rx_ws.recv().await {
             workspace.set_text(&response);
         }
     });
