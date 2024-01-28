@@ -3,7 +3,9 @@ use modules::workspaces::WorkspacesModule;
 use modules::{clock::ClockModule, Module};
 
 use glib::once_cell::sync::Lazy;
+use gtk::gdk::Display;
 use gtk::prelude::*;
+use gtk::CssProvider;
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
 use tokio::runtime::Runtime;
 
@@ -12,6 +14,7 @@ static RUNTIME: Lazy<Runtime> = Lazy::new(|| Runtime::new().expect("Failed to ex
 
 fn main() {
     let app = gtk::Application::builder().application_id(APP_ID).build();
+    app.connect_startup(|_| load_css());
     app.connect_activate(build_ui);
     app.run();
 }
@@ -51,4 +54,15 @@ fn build_ui(app: &gtk::Application) {
     }
 
     bar.present();
+}
+
+fn load_css() {
+    let provider = CssProvider::new();
+    provider.load_from_string(include_str!("style.css"));
+
+    gtk::style_context_add_provider_for_display(
+        &Display::default().expect("Could not connect to a display."),
+        &provider,
+        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 }
