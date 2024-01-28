@@ -29,7 +29,7 @@ impl Module<Box> for WorkspacesModule {
         //     workspaces_box.append(&label);
         // });
 
-        for i in 1..11 {
+        for i in 1..6 {
             let button = Button::builder().label(i.to_string()).build();
             button.connect_clicked(|btn| {
                 let id = btn.label().unwrap().parse::<i32>().unwrap();
