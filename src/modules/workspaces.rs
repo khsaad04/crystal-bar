@@ -41,7 +41,7 @@ impl Module<Box> for WorkspacesModule {
             listener.add_workspace_change_handler(move |id| {
                 let _ = tx.send(id.to_string());
             });
-            // let _ = listener.start_listener();
+            let _ = listener.start_listener();
         });
 
         glib::spawn_future_local(async move {
