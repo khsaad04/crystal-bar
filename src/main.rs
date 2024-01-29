@@ -38,9 +38,9 @@ fn build_ui(app: &gtk::Application) {
     bar.init_layer_shell();
     bar.auto_exclusive_zone_enable();
 
-    bar.set_margin(Edge::Left, 5);
-    bar.set_margin(Edge::Right, 5);
-    bar.set_margin(Edge::Top, 5);
+    // bar.set_margin(Edge::Left, 5);
+    // bar.set_margin(Edge::Right, 5);
+    // bar.set_margin(Edge::Top, 5);
 
     let anchors = [
         (Edge::Left, true),
