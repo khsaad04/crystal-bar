@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use gtk::prelude::*;
 use gtk::Box;
 use gtk::Button;
@@ -24,6 +26,8 @@ impl Module<Box> for WorkspacesModule {
         let workspaces_box = Box::new(Orientation::Horizontal, 5);
         workspaces_box.set_widget_name("workspaces");
 
+        let mut button_map: HashMap<i32, Button> = HashMap::new();
+
         for i in 1..11 {
             let button = Button::builder().label("").name(i.to_string()).build();
             button.connect_clicked(move |_btn| {
@@ -32,23 +36,60 @@ impl Module<Box> for WorkspacesModule {
                 ));
             });
             workspaces_box.append(&button);
+            button_map.insert(i, button);
         }
 
-        let mut listener = EventListener::new();
-        let (tx, mut rx) = broadcast::channel(1);
+        let workspace = Workspaces::get();
+        for ele in workspace.unwrap().to_vec().iter() {
+            let id = ele.id;
+            button_map.get(&id).unwrap().add_css_class("active");
+        }
 
-        RUNTIME.spawn(async move {
-            listener.add_workspace_change_handler(move |id| {
-                let _ = tx.send(id.to_string());
+        {
+            let mut listener = EventListener::new();
+            let (tx, mut rx) = broadcast::channel(1);
+
+            RUNTIME.spawn(async move {
+                listener.add_workspace_added_handler(move |id| {
+                    let _ = tx.send(id.to_string());
+                });
+                let _ = listener.start_listener();
             });
-            let _ = listener.start_listener();
-        });
 
-        glib::spawn_future_local(async move {
-            while let Ok(response) = rx.recv().await {
-                println!("{response}");
-            }
-        });
+            let button_map = button_map.clone();
+            glib::spawn_future_local(async move {
+                while let Ok(response) = rx.recv().await {
+                    for (id, btn) in &button_map {
+                        if *id.to_string() == response {
+                            btn.add_css_class("active");
+                        }
+                    }
+                }
+            });
+        }
+
+        {
+            let mut listener = EventListener::new();
+            let (tx, mut rx) = broadcast::channel(1);
+
+            RUNTIME.spawn(async move {
+                listener.add_workspace_destroy_handler(move |id| {
+                    let _ = tx.send(id.to_string());
+                });
+                let _ = listener.start_listener();
+            });
+
+            let button_map = button_map.clone();
+            glib::spawn_future_local(async move {
+                while let Ok(response) = rx.recv().await {
+                    for (id, btn) in &button_map {
+                        if *id.to_string() == response {
+                            btn.remove_css_class("active");
+                        }
+                    }
+                }
+            });
+        }
         workspaces_box
     }
 }
