@@ -35,7 +35,7 @@ impl Module<Box> for WorkspacesModule {
         }
 
         let mut listener = EventListener::new();
-        let (tx, mut rx) = broadcast::channel(16);
+        let (tx, mut rx) = broadcast::channel(1);
 
         RUNTIME.spawn(async move {
             listener.add_workspace_change_handler(move |id| {
@@ -46,7 +46,7 @@ impl Module<Box> for WorkspacesModule {
 
         glib::spawn_future_local(async move {
             while let Ok(response) = rx.recv().await {
-                println!("{}", response);
+                println!("{response}");
             }
         });
         workspaces_box
