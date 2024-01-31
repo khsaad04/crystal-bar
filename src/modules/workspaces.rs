@@ -4,11 +4,13 @@ use gtk::prelude::*;
 use gtk::Box;
 use gtk::Button;
 use gtk::Orientation;
+use hyprland::data::Workspace;
 use hyprland::data::Workspaces;
 use hyprland::dispatch::Dispatch;
 use hyprland::dispatch::DispatchType;
 use hyprland::dispatch::WorkspaceIdentifierWithSpecial;
 use hyprland::event_listener::EventListener;
+use hyprland::shared::HyprDataActive;
 use hyprland::shared::{HyprData, HyprDataVec};
 use tokio::sync::broadcast;
 
@@ -39,10 +41,18 @@ impl Module<Box> for WorkspacesModule {
             button_map.insert(i, button);
         }
 
-        let workspace = Workspaces::get();
-        for ele in workspace.unwrap().to_vec().iter() {
-            let id = ele.id;
-            button_map.get(&id).unwrap().add_css_class("active");
+        {
+            let workspace = Workspaces::get();
+            for ws in workspace.unwrap().to_vec().iter() {
+                let id = ws.id;
+                button_map.get(&id).unwrap().add_css_class("occupied");
+            }
+
+            let active_workspace = Workspace::get_active().unwrap();
+            button_map
+                .get(&active_workspace.id)
+                .unwrap()
+                .add_css_class("active");
         }
 
         {
@@ -50,7 +60,7 @@ impl Module<Box> for WorkspacesModule {
             let (tx, mut rx) = broadcast::channel(1);
 
             RUNTIME.spawn(async move {
-                listener.add_workspace_added_handler(move |id| {
+                listener.add_workspace_change_handler(move |id| {
                     let _ = tx.send(id.to_string());
                 });
                 let _ = listener.start_listener();
@@ -62,6 +72,9 @@ impl Module<Box> for WorkspacesModule {
                     for (id, btn) in &button_map {
                         if *id.to_string() == response {
                             btn.add_css_class("active");
+                            btn.add_css_class("occupied");
+                        } else {
+                            btn.remove_css_class("active");
                         }
                     }
                 }
@@ -84,7 +97,7 @@ impl Module<Box> for WorkspacesModule {
                 while let Ok(response) = rx.recv().await {
                     for (id, btn) in &button_map {
                         if *id.to_string() == response {
-                            btn.remove_css_class("active");
+                            btn.remove_css_class("occupied");
                         }
                     }
                 }
