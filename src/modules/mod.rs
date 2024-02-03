@@ -1,7 +1,7 @@
 pub mod clock;
 pub mod workspaces;
 
-use glib::IsA;
+use gtk::glib::IsA;
 use gtk::Widget;
 
 pub trait Module<W>

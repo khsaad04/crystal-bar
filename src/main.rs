@@ -2,8 +2,8 @@ mod modules;
 use modules::workspaces::WorkspacesModule;
 use modules::{clock::ClockModule, Module};
 
-use glib::once_cell::sync::Lazy;
 use gtk::gdk::Display;
+use gtk::glib::once_cell::sync::Lazy;
 use gtk::prelude::*;
 use gtk::CssProvider;
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
