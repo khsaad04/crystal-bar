@@ -6,6 +6,7 @@ pkgs.mkShell {
     gtk4-layer-shell
     glib
     gcc
+    rust-analyzer
   ];
 
   nativeBuildInputs = with pkgs; [
