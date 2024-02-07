@@ -1,7 +1,9 @@
 {
   description = "crystal bar flake";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs = {
+      url = "github:nixos/nixpkgs/nixos-unstable";
+    };
   };
   outputs = { nixpkgs, ... }:
     let
@@ -13,7 +15,6 @@
         buildInputs = with pkgs; [
           gtk4
           gtk4-layer-shell
-          rust-analyzer
           pkg-config
         ];
       };
