@@ -1,5 +1,5 @@
 {
-  description = "crystal bar flake";
+  description = "crystal bar devShell";
   inputs = {
     nixpkgs = {
       url = "github:nixos/nixpkgs/nixos-unstable";
