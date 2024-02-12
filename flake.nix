@@ -16,6 +16,7 @@
       ];
       nativeBuildInputs = with pkgs; [
         pkg-config
+        gdb
       ];
     };
   };

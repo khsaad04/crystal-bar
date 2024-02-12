@@ -1,5 +1,3 @@
-use std::process::Stdio;
-
 use crate::modules::Module;
 use crate::RUNTIME;
 use chrono::Local;
@@ -18,7 +16,6 @@ impl Module<Button> for ClockModule {
 
     fn into_widget(self) -> Button {
         let label = Button::default();
-        label.set_tooltip_text(Some(current_date()[..].as_ref()));
         label.set_margin_top(5);
         label.set_margin_bottom(5);
 
@@ -45,13 +42,5 @@ impl Module<Button> for ClockModule {
 }
 
 fn current_time() -> String {
-    format!("{}", Local::now().format("%Y-%m-%d %H:%M:%S"))
-}
-
-fn current_date() -> String {
-    let output = std::process::Command::new("cal")
-        .stdout(Stdio::piped())
-        .output()
-        .unwrap();
-    String::from_utf8(output.stdout).unwrap()
+    format!("{}", Local::now().format("󰥔 %I:%M %p"))
 }
