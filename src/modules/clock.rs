@@ -18,6 +18,7 @@ impl Module<Button> for ClockModule {
         let label = Button::default();
         label.set_margin_top(5);
         label.set_margin_bottom(5);
+        label.set_tooltip_text(Some("lmao"));
 
         let current_time_str = current_time();
         label.set_label(&current_time_str);

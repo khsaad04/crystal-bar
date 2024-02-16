@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4.31"
-gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
+gtk = { version = "0.7.3", package = "gtk4", features=["v4_12"]}
 gtk4-layer-shell = "0.2.0"
 hyprland = "0.3.12"
 tokio = { version = "1.35.1", features = ["rt-multi-thread", "time", "sync"] }
