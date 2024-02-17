@@ -61,49 +61,42 @@ impl Module<Box> for WorkspacesModule {
             let (tx, mut rx) = broadcast::channel(1);
 
             RUNTIME.spawn(async move {
+                let tx_1 = tx.clone();
                 listener.add_workspace_change_handler(move |id| {
-                    let _ = tx.send(id.to_string());
+                    let _ = tx_1.send(format!("c:{}", id));
                 });
-                let _ = listener.start_listener();
-            });
 
-            let button_map = button_map.clone();
-            glib::spawn_future_local(async move {
-                while let Ok(response) = rx.recv().await {
-                    for (id, btn) in &button_map {
-                        if *id.to_string() == response {
-                            btn.add_css_class("active");
-                            btn.add_css_class("occupied");
-                        } else {
-                            btn.remove_css_class("active");
-                        }
-                    }
-                }
-            });
-        }
-
-        {
-            let mut listener = EventListener::new();
-            let (tx, mut rx) = broadcast::channel(1);
-
-            RUNTIME.spawn(async move {
+                let tx_2 = tx.clone();
                 listener.add_workspace_destroy_handler(move |id| {
-                    let _ = tx.send(id.to_string());
+                    let _ = tx_2.send(format!("d:{}", id));
                 });
                 let _ = listener.start_listener();
             });
 
             let button_map = button_map.clone();
+
             glib::spawn_future_local(async move {
                 while let Ok(response) = rx.recv().await {
-                    for (id, btn) in &button_map {
-                        if *id.to_string() == response {
-                            btn.remove_css_class("occupied");
+                    if response.starts_with('c') {
+                        for (id, btn) in &button_map {
+                            if id.to_string() == response[2..] {
+                                btn.add_css_class("active");
+                                btn.add_css_class("occupied");
+                            } else {
+                                btn.remove_css_class("active");
+                            }
+                        }
+                    } else {
+                        for (id, btn) in &button_map {
+                            if id.to_string() == response[2..] {
+                                btn.remove_css_class("occupied");
+                            }
                         }
                     }
                 }
             });
         }
+
         workspaces_box
     }
 }
