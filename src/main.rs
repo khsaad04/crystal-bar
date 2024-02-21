@@ -1,4 +1,5 @@
 mod modules;
+use modules::window::WindowModule;
 use modules::workspaces::WorkspacesModule;
 use modules::{clock::ClockModule, Module};
 
@@ -22,11 +23,22 @@ fn main() {
 fn build_ui(app: &gtk::Application) {
     let clock = ClockModule::new().into_widget();
     let workspaces = WorkspacesModule::new().into_widget();
+    let window = WindowModule::new().into_widget();
 
     // Box
+    let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
+    let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
+    let end_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
+
     let center_box = gtk::CenterBox::default();
-    center_box.set_center_widget(Some(&clock));
-    center_box.set_start_widget(Some(&workspaces));
+    center_box.set_start_widget(Some(&start_widgets));
+    center_box.set_end_widget(Some(&end_widgets));
+    center_box.set_center_widget(Some(&center_widgets));
+
+    start_widgets.append(&workspaces);
+    start_widgets.append(&window);
+
+    center_widgets.append(&clock);
 
     let bar = gtk::ApplicationWindow::builder()
         .application(app)

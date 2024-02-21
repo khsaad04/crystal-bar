@@ -1,4 +1,5 @@
 pub mod clock;
+pub mod window;
 pub mod workspaces;
 
 use gtk::glib::IsA;

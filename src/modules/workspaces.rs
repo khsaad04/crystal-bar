@@ -58,7 +58,7 @@ impl Module<Box> for WorkspacesModule {
 
         {
             let mut listener = EventListener::new();
-            let (tx, mut rx) = broadcast::channel(1);
+            let (tx, mut rx) = broadcast::channel(10);
 
             RUNTIME.spawn(async move {
                 let tx_1 = tx.clone();
