@@ -10,5 +10,4 @@ where
     W: IsA<Widget>,
 {
     fn into_widget(self) -> W;
-    fn new() -> Self;
 }

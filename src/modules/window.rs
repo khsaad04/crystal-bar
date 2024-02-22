@@ -7,13 +7,10 @@ use tokio::sync::broadcast;
 use crate::modules::Module;
 use crate::RUNTIME;
 
+#[derive(Default)]
 pub struct WindowModule {}
 
 impl Module<Label> for WindowModule {
-    fn new() -> Self {
-        Self {}
-    }
-
     fn into_widget(self) -> Label {
         let window = Label::new(None);
         window.set_label(&get_current_active_window().unwrap_or("".to_string()));

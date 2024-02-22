@@ -18,13 +18,10 @@ use tokio::sync::broadcast;
 use crate::modules::Module;
 use crate::RUNTIME;
 
+#[derive(Default)]
 pub struct WorkspacesModule {}
 
 impl Module<Box> for WorkspacesModule {
-    fn new() -> Self {
-        Self {}
-    }
-
     fn into_widget(self) -> Box {
         let workspaces_box = Box::new(Orientation::Horizontal, 5);
         workspaces_box.set_widget_name("workspaces");

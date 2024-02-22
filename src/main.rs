@@ -21,24 +21,24 @@ fn main() {
 }
 
 fn build_ui(app: &gtk::Application) {
-    let clock = ClockModule::new().into_widget();
-    let workspaces = WorkspacesModule::new().into_widget();
-    let window = WindowModule::new().into_widget();
+    let clock = ClockModule::default().into_widget();
+    let workspaces = WorkspacesModule::default().into_widget();
+    let window = WindowModule::default().into_widget();
 
     // Box
+    let center_box = gtk::CenterBox::default();
+
     let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     let end_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
 
-    let center_box = gtk::CenterBox::default();
     center_box.set_start_widget(Some(&start_widgets));
     center_box.set_end_widget(Some(&end_widgets));
     center_box.set_center_widget(Some(&center_widgets));
 
     start_widgets.append(&workspaces);
-    start_widgets.append(&window);
-
     center_widgets.append(&clock);
+    start_widgets.append(&window);
 
     let bar = gtk::ApplicationWindow::builder()
         .application(app)
@@ -49,10 +49,6 @@ fn build_ui(app: &gtk::Application) {
     bar.set_layer(Layer::Overlay);
     bar.init_layer_shell();
     bar.auto_exclusive_zone_enable();
-
-    // bar.set_margin(Edge::Left, 5);
-    // bar.set_margin(Edge::Right, 5);
-    // bar.set_margin(Edge::Top, 5);
 
     let anchors = [
         (Edge::Left, true),
