@@ -1,4 +1,5 @@
 pub mod clock;
+pub mod sysinfo;
 pub mod window;
 pub mod workspaces;
 
