@@ -23,12 +23,12 @@ impl Module<Label> for WindowModule {
             RUNTIME.spawn(async move {
                 let tx_1 = tx.clone();
                 listener.add_active_window_change_handler(move |id| {
-                    let _ = tx_1.send(id.unwrap().window_title);
+                    let _ = tx_1.send(id.unwrap().window_title.to_string());
                 });
 
                 let tx_2 = tx.clone();
                 listener.add_workspace_change_handler(move |id| {
-                    let _ = tx_2.send(format!("c:{}", id));
+                    let _ = tx_2.send(id.to_string());
                 });
 
                 let _ = listener.start_listener();
@@ -36,12 +36,8 @@ impl Module<Label> for WindowModule {
 
             let window = window.clone();
             glib::spawn_future_local(async move {
-                while let Ok(response) = rx.recv().await {
-                    if !response.starts_with('c') {
-                        window.set_label(&get_active_window().unwrap_or("".to_string()));
-                    } else {
-                        window.set_label(&get_active_window().unwrap_or("".to_string()));
-                    }
+                while let Ok(_response) = rx.recv().await {
+                    window.set_label(&get_active_window().unwrap_or("".to_string()));
                 }
             });
         }

@@ -1,7 +1,7 @@
+mod layout;
 mod modules;
-use modules::window::WindowModule;
-use modules::workspaces::WorkspacesModule;
-use modules::{clock::ClockModule, Module};
+
+use layout::layout;
 
 use gtk::gdk::Display;
 use gtk::glib::once_cell::sync::Lazy;
@@ -21,31 +21,10 @@ fn main() {
 }
 
 fn build_ui(app: &gtk::Application) {
-    let clock = ClockModule::default().into_widget();
-    let workspaces = WorkspacesModule::default().into_widget();
-    let window = WindowModule::default().into_widget();
-
-    // Box
-
-    let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    start_widgets.append(&workspaces);
-
-    let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    center_widgets.append(&clock);
-
-    let end_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    start_widgets.append(&window);
-
-    let center_box = gtk::CenterBox::builder()
-        .start_widget(&start_widgets)
-        .center_widget(&center_widgets)
-        .end_widget(&end_widgets)
-        .build();
-
     let bar = gtk::ApplicationWindow::builder()
         .application(app)
         .title("window")
-        .child(&center_box)
+        .child(&layout())
         .build();
 
     bar.set_layer(Layer::Overlay);
