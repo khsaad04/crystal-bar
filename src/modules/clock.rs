@@ -24,7 +24,6 @@ impl Module<Button> for ClockModule {
         let label = Button::builder()
             .margin_top(5)
             .margin_bottom(5)
-            .tooltip_text("lmao")
             .label(get_current_time(&self))
             .build();
 

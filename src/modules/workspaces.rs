@@ -23,8 +23,11 @@ pub struct WorkspacesModule {}
 
 impl Module<Box> for WorkspacesModule {
     fn into_widget(self) -> Box {
-        let workspaces_box = Box::new(Orientation::Horizontal, 5);
-        workspaces_box.set_widget_name("workspaces");
+        let workspaces_box = Box::builder()
+            .orientation(Orientation::Horizontal)
+            .spacing(5)
+            .name("workspaces")
+            .build();
 
         let mut button_map: HashMap<i32, Button> = HashMap::new();
 
@@ -39,19 +42,18 @@ impl Module<Box> for WorkspacesModule {
             button_map.insert(i, button);
         }
 
-        {
-            let workspace = Workspaces::get();
-            for ws in workspace.unwrap().to_vec().iter() {
-                let id = ws.id;
-                button_map.get(&id).unwrap().add_css_class("occupied");
-            }
-
-            let active_workspace = Workspace::get_active().unwrap();
-            button_map
-                .get(&active_workspace.id)
-                .unwrap()
-                .add_css_class("active");
+        // Init
+        let workspaces = Workspaces::get();
+        for ws in workspaces.unwrap().to_vec().iter() {
+            let id = ws.id;
+            button_map.get(&id).unwrap().add_css_class("occupied");
         }
+
+        let active_workspace = Workspace::get_active().unwrap();
+        button_map
+            .get(&active_workspace.id)
+            .unwrap()
+            .add_css_class("active");
 
         {
             let mut listener = EventListener::new();

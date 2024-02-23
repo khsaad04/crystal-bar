@@ -12,8 +12,9 @@ pub struct WindowModule {}
 
 impl Module<Label> for WindowModule {
     fn into_widget(self) -> Label {
-        let window = Label::new(None);
-        window.set_label(&get_current_active_window().unwrap_or("".to_string()));
+        let window = Label::builder()
+            .label(get_active_window().unwrap_or("".to_string()))
+            .build();
 
         {
             let mut listener = EventListener::new();
@@ -37,11 +38,9 @@ impl Module<Label> for WindowModule {
             glib::spawn_future_local(async move {
                 while let Ok(response) = rx.recv().await {
                     if !response.starts_with('c') {
-                        window.set_label(&response);
+                        window.set_label(&get_active_window().unwrap_or("".to_string()));
                     } else {
-                        window
-                            .clone()
-                            .set_label(&get_current_active_window().unwrap_or("".to_string()));
+                        window.set_label(&get_active_window().unwrap_or("".to_string()));
                     }
                 }
             });
@@ -51,10 +50,19 @@ impl Module<Label> for WindowModule {
     }
 }
 
-fn get_current_active_window() -> Option<String> {
+fn get_active_window() -> Option<String> {
     let client = hyprland::data::Client::get_active().unwrap();
     match client {
-        Some(w) => Some(w.title),
+        Some(w) => Some(truncate(w.title)),
         None => None,
+    }
+}
+
+fn truncate(title: String) -> String {
+    let n = title.len();
+    if n > 25 {
+        format!("{}...", &title[0..22])
+    } else {
+        title
     }
 }

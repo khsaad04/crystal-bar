@@ -26,23 +26,25 @@ fn build_ui(app: &gtk::Application) {
     let window = WindowModule::default().into_widget();
 
     // Box
-    let center_box = gtk::CenterBox::default();
 
     let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    let end_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-
-    center_box.set_start_widget(Some(&start_widgets));
-    center_box.set_end_widget(Some(&end_widgets));
-    center_box.set_center_widget(Some(&center_widgets));
-
     start_widgets.append(&workspaces);
+
+    let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     center_widgets.append(&clock);
+
+    let end_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     start_widgets.append(&window);
+
+    let center_box = gtk::CenterBox::builder()
+        .start_widget(&start_widgets)
+        .center_widget(&center_widgets)
+        .end_widget(&end_widgets)
+        .build();
 
     let bar = gtk::ApplicationWindow::builder()
         .application(app)
-        .title("top_bar")
+        .title("window")
         .child(&center_box)
         .build();
 
