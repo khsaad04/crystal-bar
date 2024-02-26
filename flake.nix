@@ -32,6 +32,7 @@
         gtk4
         gtk4-layer-shell
         rustPkg
+        rust-analyzer-nightly
       ];
     };
   };
