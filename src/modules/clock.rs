@@ -21,7 +21,7 @@ impl Default for ClockModule {
 
 impl Module<Button> for ClockModule {
     fn into_widget(self) -> Button {
-        let label = Button::builder()
+        let button = Button::builder()
             .margin_top(5)
             .margin_bottom(5)
             .label(get_current_time(&self))
@@ -36,13 +36,13 @@ impl Module<Button> for ClockModule {
             }
         });
 
-        let time = label.clone();
+        let time = button.clone();
         glib::spawn_future_local(async move {
             while let Some(response) = rx.recv().await {
                 time.set_label(&response);
             }
         });
-        label
+        button
     }
 }
 
