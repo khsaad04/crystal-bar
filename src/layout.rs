@@ -7,15 +7,15 @@ use gtk::prelude::*;
 
 pub fn layout() -> gtk::CenterBox {
     let clock = ClockModule::default().into_widget();
-    let workspaces = WorkspacesModule::default().into_widget();
-    let window = WindowModule::default().into_widget();
+    // let workspaces = WorkspacesModule::default().into_widget();
+    // let window = WindowModule::default().into_widget();
     let sysinfo = SysinfoModule::default().into_widget();
 
     // Box
 
     let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    start_widgets.append(&workspaces);
-    start_widgets.append(&window);
+    // start_widgets.append(&workspaces);
+    // start_widgets.append(&window);
 
     let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     center_widgets.append(&clock);

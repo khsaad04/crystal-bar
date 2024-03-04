@@ -25,6 +25,7 @@ impl Module<Button> for ClockModule {
             .margin_top(5)
             .margin_bottom(5)
             .label(get_current_time(&self))
+            .tooltip_text("lmao")
             .build();
 
         let (tx, mut rx) = mpsc::channel(1);
