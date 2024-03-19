@@ -6,34 +6,38 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = {
-    nixpkgs,
-    fenix,
-    ...
-  }: let
-    system = "x86_64-linux";
-    toolchain = "stable";
-    overlays = [fenix.overlays.default];
-    pkgs = import nixpkgs {
-      inherit system overlays;
-    };
-    rustPkg = pkgs.fenix."${toolchain}".withComponents [
-      "cargo"
-      "clippy"
-      "rust-src"
-      "rustc"
-      "rustfmt"
-    ];
-  in {
-    devShells.x86_64-linux.default = pkgs.mkShell {
-      nativeBuildInputs = with pkgs; [
-        pkg-config
-        gdb
-        gtk4
-        gtk4-layer-shell
-        rustPkg
-        rust-analyzer-nightly
+  outputs =
+    { nixpkgs
+    , fenix
+    , ...
+    }:
+    let
+      system = "x86_64-linux";
+      toolchain = "stable";
+      overlays = [ fenix.overlays.default ];
+      pkgs = import nixpkgs {
+        inherit system overlays;
+      };
+      rustPkg = pkgs.fenix."${toolchain}".withComponents [
+        "cargo"
+        "clippy"
+        "rust-src"
+        "rustc"
+        "rustfmt"
       ];
+    in
+    {
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs;[
+          nil
+          gdb
+          rustPkg
+          rust-analyzer-nightly
+          gtk4
+          gtk4-layer-shell
+          pkg-config
+        ];
+      };
+      formatter.${system} = pkgs.nixpkgs-fmt;
     };
-  };
 }
