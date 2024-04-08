@@ -1,6 +1,7 @@
 use crate::modules::Module;
 use crate::RUNTIME;
 use gtk::glib;
+use gtk::prelude::LabelExt;
 use gtk::Label;
 use sysinfo::System;
 use tokio::sync::mpsc;

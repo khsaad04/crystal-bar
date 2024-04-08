@@ -5,7 +5,7 @@ use crate::modules::{
 
 use gtk::prelude::*;
 
-pub fn layout() -> gtk::CenterBox {
+pub fn layout() -> gtk::Box {
     let clock = ClockModule::default().into_widget();
     // let workspaces = WorkspacesModule::default().into_widget();
     // let window = WindowModule::default().into_widget();
@@ -18,14 +18,15 @@ pub fn layout() -> gtk::CenterBox {
     // start_widgets.append(&window);
 
     let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    center_widgets.append(&clock);
+    center_widgets.add(&clock);
 
     let end_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
-    end_widgets.append(&sysinfo);
+    end_widgets.add(&sysinfo);
 
-    gtk::CenterBox::builder()
-        .start_widget(&start_widgets)
-        .center_widget(&center_widgets)
-        .end_widget(&end_widgets)
+    gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .child(&start_widgets)
+        .child(&center_widgets)
+        .child(&end_widgets)
         .build()
 }

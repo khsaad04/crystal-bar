@@ -38,7 +38,7 @@ impl Module<Box> for WorkspacesModule {
                     WorkspaceIdentifierWithSpecial::Id(i),
                 ));
             });
-            workspaces_box.append(&button);
+            workspaces_box.add(&button);
             button_map.insert(i, button);
         }
 
@@ -46,14 +46,14 @@ impl Module<Box> for WorkspacesModule {
         let workspaces = Workspaces::get();
         for ws in workspaces.unwrap().to_vec().iter() {
             let id = ws.id;
-            button_map.get(&id).unwrap().add_css_class("occupied");
+            button_map.get(&id).unwrap().set_widget_name("occupied");
         }
 
         let active_workspace = Workspace::get_active().unwrap();
         button_map
             .get(&active_workspace.id)
             .unwrap()
-            .add_css_class("active");
+            .set_widget_name("active");
 
         {
             let mut listener = EventListener::new();
@@ -79,16 +79,16 @@ impl Module<Box> for WorkspacesModule {
                     if response.starts_with('c') {
                         for (id, btn) in &button_map {
                             if id.to_string() == response[2..] {
-                                btn.add_css_class("active");
-                                btn.add_css_class("occupied");
+                                btn.set_widget_name("active");
+                                btn.set_widget_name("occupied");
                             } else {
-                                btn.remove_css_class("active");
+                                btn.set_widget_name("");
                             }
                         }
                     } else {
                         for (id, btn) in &button_map {
                             if id.to_string() == response[2..] {
-                                btn.remove_css_class("occupied");
+                                btn.set_widget_name("");
                             }
                         }
                     }

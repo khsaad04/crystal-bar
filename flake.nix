@@ -33,8 +33,8 @@
           gdb
           rustPkg
           rust-analyzer-nightly
-          gtk4
-          gtk4-layer-shell
+          gtk3
+          gtk-layer-shell
           pkg-config
         ];
       };

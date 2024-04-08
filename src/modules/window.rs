@@ -1,4 +1,5 @@
 use gtk::glib;
+use gtk::prelude::LabelExt;
 use gtk::Label;
 use hyprland::event_listener::EventListener;
 use hyprland::shared::HyprDataActiveOptional;
