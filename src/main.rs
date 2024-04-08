@@ -15,7 +15,9 @@ fn main() {
     let app = gtk::Application::builder().application_id(APP_ID).build();
     app.connect_startup(|app| {
         let provider = gtk::CssProvider::new();
-        provider.load_from_path("style.css").expect("Failed to load CSS");
+        provider
+            .load_from_path("style.css")
+            .expect("Failed to load CSS");
         gtk::StyleContext::add_provider_for_screen(
             &gtk::gdk::Screen::default().expect("Error initializing gtk css provider."),
             &provider,

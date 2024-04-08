@@ -44,7 +44,7 @@ impl Module<Label> for SysinfoModule {
 fn get_sysinfo(sys: &mut System) -> String {
     let cpu_usage = get_cpu_usage(sys);
     let memory_usage = get_memory_usage(sys);
-    format!(" {}%  {}%", cpu_usage, memory_usage)
+    format!(" {}%  {}%", cpu_usage, memory_usage)
 }
 
 fn get_cpu_usage(sys: &mut System) -> String {
