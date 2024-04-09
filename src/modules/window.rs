@@ -24,7 +24,7 @@ impl Module<Label> for WindowModule {
             RUNTIME.spawn(async move {
                 let tx_1 = tx.clone();
                 listener.add_active_window_change_handler(move |id| {
-                    let _ = tx_1.send(id.unwrap().window_title.to_string());
+                    let _ = tx_1.send(id.expect("Couldn't get window id").window_title.to_string());
                 });
 
                 let tx_2 = tx.clone();
@@ -48,7 +48,7 @@ impl Module<Label> for WindowModule {
 }
 
 fn get_active_window() -> Option<String> {
-    let client = hyprland::data::Client::get_active().unwrap();
+    let client = hyprland::data::Client::get_active().expect("active window not found");
     match client {
         Some(w) => Some(truncate(w.title)),
         None => None,

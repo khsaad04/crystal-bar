@@ -16,8 +16,8 @@ pub fn layout() -> gtk::Box {
     let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     start_widgets.set_valign(gtk::Align::Center);
     start_widgets.set_halign(gtk::Align::Start);
-    // start_widgets.append(&workspaces);
-    // start_widgets.append(&window);
+    // start_widgets.add(&workspaces);
+    // start_widgets.add(&window);
 
     let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     center_widgets.set_valign(gtk::Align::Center);

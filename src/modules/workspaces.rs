@@ -32,7 +32,10 @@ impl Module<Box> for WorkspacesModule {
         let mut button_map: HashMap<i32, Button> = HashMap::new();
 
         for i in 1..11 {
-            let button = Button::builder().label("").name(i.to_string()).build();
+            let button = Button::builder()
+                .label(i.to_string())
+                .name(i.to_string())
+                .build();
             button.connect_clicked(move |_btn| {
                 let _ = Dispatch::call(DispatchType::Workspace(
                     WorkspaceIdentifierWithSpecial::Id(i),
@@ -43,16 +46,19 @@ impl Module<Box> for WorkspacesModule {
         }
 
         // Init
-        let workspaces = Workspaces::get();
-        for ws in workspaces.unwrap().to_vec().iter() {
+        let workspaces = Workspaces::get().expect("No workspaces found");
+        for ws in workspaces.to_vec().iter() {
             let id = ws.id;
-            button_map.get(&id).unwrap().set_widget_name("occupied");
+            button_map
+                .get(&id)
+                .expect("button not found")
+                .set_widget_name("occupied");
         }
 
-        let active_workspace = Workspace::get_active().unwrap();
+        let active_workspace = Workspace::get_active().expect("No active workspace found");
         button_map
             .get(&active_workspace.id)
-            .unwrap()
+            .expect("button not found")
             .set_widget_name("active");
 
         {
@@ -80,7 +86,6 @@ impl Module<Box> for WorkspacesModule {
                         for (id, btn) in &button_map {
                             if id.to_string() == response[2..] {
                                 btn.set_widget_name("active");
-                                btn.set_widget_name("occupied");
                             } else {
                                 btn.set_widget_name("");
                             }
