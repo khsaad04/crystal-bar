@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use gtk::glib;
 use gtk::prelude::*;
 use gtk::Box;
@@ -19,17 +17,17 @@ use crate::modules::Module;
 use crate::RUNTIME;
 
 #[derive(Default)]
-pub struct WorkspacesModule {}
+pub struct HyprWorkspacesModule {}
 
-impl Module<Box> for WorkspacesModule {
-    fn into_widget(self) -> Box {
+impl Module<Box> for HyprWorkspacesModule {
+    fn callback(self) -> Box {
         let workspaces_box = Box::builder()
             .orientation(Orientation::Horizontal)
             .spacing(5)
             .name("workspaces")
             .build();
 
-        let mut button_map: HashMap<i32, Button> = HashMap::new();
+        let mut buttons: Vec<Button> = vec![];
 
         for i in 1..11 {
             let button = Button::builder()
@@ -37,29 +35,21 @@ impl Module<Box> for WorkspacesModule {
                 .name(i.to_string())
                 .build();
             button.connect_clicked(move |_btn| {
-                let _ = Dispatch::call(DispatchType::Workspace(
-                    WorkspaceIdentifierWithSpecial::Id(i),
-                ));
+                change_workspace(i);
             });
             workspaces_box.add(&button);
-            button_map.insert(i, button);
+            buttons.push(button);
         }
 
         // Init
-        let workspaces = Workspaces::get().expect("No workspaces found");
+        let workspaces = Workspaces::get().expect("Failed to get workspaces");
         for ws in workspaces.to_vec().iter() {
             let id = ws.id;
-            button_map
-                .get(&id)
-                .expect("button not found")
-                .set_widget_name("occupied");
+            buttons[id as usize].set_widget_name("occupied");
         }
 
-        let active_workspace = Workspace::get_active().expect("No active workspace found");
-        button_map
-            .get(&active_workspace.id)
-            .expect("button not found")
-            .set_widget_name("active");
+        let active_workspace = Workspace::get_active().expect("Missing active workspace button");
+        buttons[active_workspace.id as usize].set_widget_name("active");
 
         {
             let mut listener = EventListener::new();
@@ -78,20 +68,16 @@ impl Module<Box> for WorkspacesModule {
                 let _ = listener.start_listener();
             });
 
-            let button_map = button_map.clone();
-
             glib::spawn_future_local(async move {
                 while let Ok(response) = rx.recv().await {
                     if response.starts_with('c') {
-                        for (id, btn) in &button_map {
+                        for (id, btn) in buttons.clone().into_iter().enumerate() {
                             if id.to_string() == response[2..] {
                                 btn.set_widget_name("active");
-                            } else {
-                                btn.set_widget_name("");
                             }
                         }
                     } else {
-                        for (id, btn) in &button_map {
+                        for (id, btn) in buttons.clone().into_iter().enumerate() {
                             if id.to_string() == response[2..] {
                                 btn.set_widget_name("");
                             }
@@ -103,4 +89,10 @@ impl Module<Box> for WorkspacesModule {
 
         workspaces_box
     }
+}
+
+fn change_workspace(id: i32) {
+    let _ = Dispatch::call(DispatchType::Workspace(WorkspaceIdentifierWithSpecial::Id(
+        id,
+    )));
 }

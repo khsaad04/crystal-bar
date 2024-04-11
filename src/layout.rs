@@ -1,22 +1,22 @@
 use crate::modules::{
-    clock::ClockModule, sysinfo::SysinfoModule, window::WindowModule, workspaces::WorkspacesModule,
-    Module,
+    clock::ClockModule, hypr_window::WindowModule, hypr_workspaces::HyprWorkspacesModule,
+    sway_workspaces::SwayWorkspacesModule, sysinfo::SysinfoModule, Module,
 };
 
 use gtk::prelude::*;
 
 pub fn layout() -> gtk::Box {
-    let clock = ClockModule::default().into_widget();
-    // let workspaces = WorkspacesModule::default().into_widget();
-    // let window = WindowModule::default().into_widget();
-    let sysinfo = SysinfoModule::default().into_widget();
+    let clock = ClockModule::default().callback();
+    let workspaces = SwayWorkspacesModule::default().callback();
+    // let window = WindowModule::default().callback();
+    let sysinfo = SysinfoModule::default().callback();
 
     // Box
 
     let start_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);
     start_widgets.set_valign(gtk::Align::Center);
     start_widgets.set_halign(gtk::Align::Start);
-    // start_widgets.add(&workspaces);
+    start_widgets.add(&workspaces);
     // start_widgets.add(&window);
 
     let center_widgets = gtk::Box::new(gtk::Orientation::Horizontal, 5);

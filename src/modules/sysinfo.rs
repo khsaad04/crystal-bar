@@ -11,7 +11,7 @@ use tokio::time::sleep;
 pub struct SysinfoModule {}
 
 impl Module<Label> for SysinfoModule {
-    fn into_widget(self) -> Label {
+    fn callback(self) -> Label {
         let mut sys = System::new_all();
         let label = Label::builder()
             .margin_top(5)

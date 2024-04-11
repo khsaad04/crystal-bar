@@ -20,7 +20,7 @@ impl Default for ClockModule {
 }
 
 impl Module<Button> for ClockModule {
-    fn into_widget(self) -> Button {
+    fn callback(self) -> Button {
         let button = Button::builder()
             .margin_top(5)
             .margin_bottom(5)

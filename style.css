@@ -1,5 +1,5 @@
 * {
-    font-family: FiraCode Nerd Font;
+    font-family: Fira Code, Symbols Nerd Font;
     font-size: 11px;
     font-weight: 800;
 }
@@ -13,10 +13,10 @@
     transition: all 0.3s ease;
 }
 
-#workspaces button.occupied label {
+#occupied label {
     color: blue;
 }
 
-#workspaces button.active label {
+#active label {
     color: red;
 }
